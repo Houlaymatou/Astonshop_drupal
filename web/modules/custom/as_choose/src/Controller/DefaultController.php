@@ -18,6 +18,23 @@ class DefaultController extends ControllerBase {
    *   Return Hello string.
    */
   public function listingPage() {
+    $query = \Drupal::entityQuery('node');
+    //kint($query);
+    $query->condition('type', 'chooses');
+    $query->condition('status', 1, '=');
+    $query->sort('created', 'DESC');
+    $result = $query->execute();
+    //kint($result);
+    $nodes = \Drupal\node\Entity\Node::loadMultiple($result);
+    //kint($nodes);
+    /* boucle foreach pour reccuperer et afficher les produit*/
+    $chooses = [];
+    foreach ($nodes as $node) {
+       $node_teaser = node_view($node, 'teaser');
+       //kint($node_teaser);die();
+       $chooses[] = $node_teaser;
+    }
+ 
     return [
      /* '#type' => 'container',
      * '#attributes' => [
@@ -33,7 +50,7 @@ class DefaultController extends ControllerBase {
       ],
     */
       '#theme' => 'choose_list',
-      'chooses' => ['Choose 1', 'Choose 2', 'Choose 3'],
+      'chooses' => $chooses,
     ];
   }
 
